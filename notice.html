@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notices & Announcements - CampusConnect</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL@48,400,0&display=swap">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7ff 0%, #e8ecff 100%);
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            margin-bottom: 2rem;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .nav-btn {
+            padding: 0.7rem 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* ===== PAGE TITLE ===== */
+        .page-title {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 3rem;
+        }
+
+        /* ===== UPLOAD SECTION ===== */
+        .upload-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 3rem;
+        }
+
+        .upload-section h2 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+
+        .upload-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        select,
+        textarea {
+            padding: 0.8rem;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.2);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+            grid-column: 1 / -1;
+        }
+
+        .file-upload-area {
+            grid-column: 1 / -1;
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f8f9ff;
+        }
+
+        .file-upload-area:hover {
+            background: #f0f2ff;
+            border-color: #764ba2;
+        }
+
+        .file-upload-area.drag-over {
+            background: #e8ecff;
+            border-color: #667eea;
+            transform: scale(1.02);
+        }
+
+        .file-upload-area span {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .file-upload-area p {
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .btn-container {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 0.9rem 2rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .file-name {
+            color: #667eea;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        /* ===== NOTICES LIST ===== */
+        .notices-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .notices-section h2 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 2rem;
+        }
+
+        .notices-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .notice-card {
+            background: linear-gradient(135deg, #f5f7ff 0%, #e8ecff 100%);
+            padding: 1.5rem;
+            border-radius: 15px;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .notice-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.2);
+        }
+
+        .notice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .notice-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #333;
+            flex: 1;
+        }
+
+        .notice-importance {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .importance-high {
+            background: #ffe6e6;
+            color: #c00;
+        }
+
+        .importance-medium {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .importance-low {
+            background: #d4f4dd;
+            color: #1e7e34;
+        }
+
+        .notice-date {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .notice-content {
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+            max-height: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .notice-file {
+            background: white;
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .notice-file span {
+            font-size: 1.5rem;
+        }
+
+        .notice-file-info {
+            flex: 1;
+        }
+
+        .notice-file-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9rem;
+            word-break: break-word;
+        }
+
+        .notice-file-size {
+            font-size: 0.8rem;
+            color: #999;
+        }
+
+        .notice-actions {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 0.6rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+        }
+
+        .btn-download {
+            background: #d4f4dd;
+            color: #1e7e34;
+        }
+
+        .btn-download:hover {
+            background: #b8ead8;
+        }
+
+        .btn-delete {
+            background: #ffe6e6;
+            color: #c00;
+        }
+
+        .btn-delete:hover {
+            background: #ffcccc;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 3rem;
+            color: #999;
+        }
+
+        .empty-message span {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        /* ===== SUCCESS/ERROR MESSAGES ===== */
+        .message {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .success {
+            background: #d4f4dd;
+            color: #1e7e34;
+            border-left: 4px solid #1e7e34;
+        }
+
+        .error {
+            background: #ffe6e6;
+            color: #c00;
+            border-left: 4px solid #c00;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .upload-form {
+                grid-template-columns: 1fr;
+            }
+
+            .notices-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-title {
+                font-size: 1.8rem;
+            }
+
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">📢 CampusConnect Notices</div>
+                <a href="home.html" class="nav-btn">← Back to Home</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <div class="container">
+        <h1 class="page-title">Latest Campus Announcements</h1>
+
+        <!-- MESSAGES -->
+        <div id="successMessage" class="message success"></div>
+        <div id="errorMessage" class="message error"></div>
+
+        <!-- UPLOAD SECTION -->
+        <div class="upload-section">
+            <h2>📝 Post New Announcement</h2>
+            <form class="upload-form" id="noticeForm">
+                <div class="form-group">
+                    <label for="title">Title *</label>
+                    <input type="text" id="title" name="title" placeholder="e.g., Mid-term Exam Schedule" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="date">Post Date *</label>
+                    <input type="date" id="date" name="date" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="importance">Importance Level *</label>
+                    <select id="importance" name="importance" required>
+                        <option value="">-- Select Level --</option>
+                        <option value="high">🔴 High (Urgent)</option>
+                        <option value="medium">🟡 Medium (Important)</option>
+                        <option value="low">🟢 Low (FYI)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <select id="category" name="category">
+                        <option value="academic">Academic</option>
+                        <option value="event">Event</option>
+                        <option value="maintenance">Maintenance</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="content">Announcement Content *</label>
+                    <textarea id="content" name="content" placeholder="Enter announcement details..." required></textarea>
+                </div>
+
+                <div class="form-group file-upload-area" id="fileUploadArea" onclick="document.getElementById('fileInput').click()">
+                    <span>📎</span>
+                    <p><strong>Click to upload or drag & drop</strong></p>
+                    <p style="font-size: 0.9rem; color: #999;">PDF, Image, or Document (Max 10MB)</p>
+                    <input type="file" id="fileInput" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif">
+                    <div class="file-name" id="fileName"></div>
+                </div>
+
+                <div class="btn-container">
+                    <button type="reset" class="btn btn-secondary">Clear</button>
+                    <button type="submit" class="btn btn-primary">Post Announcement</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- NOTICES LIST -->
+        <div class="notices-section">
+            <h2>📋 All Announcements</h2>
+            <div class="notices-grid" id="noticesGrid">
+                <div class="empty-message">
+                    <span>📭</span>
+                    <p>No announcements yet. Post your first one above!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== DATA MANAGEMENT =====
+        let allNotices = [];
+
+        // Load data from localStorage
+        function loadNotices() {
+            const stored = localStorage.getItem('campusconnect_notices');
+            if (stored) {
+                allNotices = JSON.parse(stored);
+                renderNotices();
+            }
+        }
+
+        // Save data to localStorage
+        function saveNotices() {
+            localStorage.setItem('campusconnect_notices', JSON.stringify(allNotices));
+        }
+
+        // ===== FILE HANDLING =====
+        const fileUploadArea = document.getElementById('fileUploadArea');
+        const fileInput = document.getElementById('fileInput');
+        let selectedFile = null;
+
+        fileUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileUploadArea.classList.add('drag-over');
+        });
+
+        fileUploadArea.addEventListener('dragleave', () => {
+            fileUploadArea.classList.remove('drag-over');
+        });
+
+        fileUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileUploadArea.classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            const maxSize = 10 * 1024 * 1024; // 10MB
+            if (file.size > maxSize) {
+                showError('File size exceeds 10MB limit!');
+                return;
+            }
+
+            selectedFile = {
+                name: file.name,
+                size: (file.size / 1024).toFixed(2),
+                type: file.type,
+                data: null // For base64 storage
+            };
+
+            // Read file as base64 for localStorage
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                selectedFile.data = e.target.result;
+                document.getElementById('fileName').textContent = `✓ ${file.name}`;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // ===== FORM SUBMISSION =====
+        document.getElementById('noticeForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const notice = {
+                id: Date.now(),
+                title: document.getElementById('title').value,
+                date: document.getElementById('date').value,
+                importance: document.getElementById('importance').value,
+                category: document.getElementById('category').value,
+                content: document.getElementById('content').value,
+                file: selectedFile,
+                createdAt: new Date().toISOString()
+            };
+
+            allNotices.unshift(notice); // Add to beginning
+            saveNotices();
+            renderNotices();
+            document.getElementById('noticeForm').reset();
+            document.getElementById('fileName').textContent = '';
+            selectedFile = null;
+            showSuccess('✅ Announcement posted successfully!');
+        });
+
+        // ===== RENDER NOTICES =====
+        function renderNotices() {
+            const grid = document.getElementById('noticesGrid');
+
+            if (allNotices.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-message">
+                        <span>📭</span>
+                        <p>No announcements yet. Post your first one above!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = allNotices.map(notice => `
+                <div class="notice-card">
+                    <div class="notice-header">
+                        <div class="notice-title">${notice.title}</div>
+                        <span class="notice-importance importance-${notice.importance}">
+                            ${notice.importance}
+                        </span>
+                    </div>
+                    <div class="notice-date">📅 ${new Date(notice.date).toLocaleDateString()} • ${notice.category}</div>
+                    <div class="notice-content">${notice.content}</div>
+                    
+                    ${notice.file ? `
+                        <div class="notice-file">
+                            <span>${getFileIcon(notice.file.type)}</span>
+                            <div class="notice-file-info">
+                                <div class="notice-file-name">${notice.file.name}</div>
+                                <div class="notice-file-size">${notice.file.size} KB</div>
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    <div class="notice-actions">
+                        ${notice.file ? `
+                            <button class="btn-action btn-download" onclick="downloadFile('${notice.id}')">
+                                <span class="material-symbols-rounded">download</span>
+                                Download
+                            </button>
+                        ` : ''}
+                        <button class="btn-action btn-delete" onclick="deleteNotice('${notice.id}')">
+                            <span class="material-symbols-rounded">delete</span>
+                            Remove
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ===== DELETE NOTICE =====
+        function deleteNotice(id) {
+            if (confirm('Are you sure you want to delete this announcement?')) {
+                allNotices = allNotices.filter(n => n.id != id);
+                saveNotices();
+                renderNotices();
+                showSuccess('✅ Announcement removed!');
+            }
+        }
+
+        // ===== DOWNLOAD FILE =====
+        function downloadFile(id) {
+            const notice = allNotices.find(n => n.id == id);
+            if (notice && notice.file) {
+                const link = document.createElement('a');
+                link.href = notice.file.data;
+                link.download = notice.file.name;
+                link.click();
+            }
+        }
+
+        // ===== UTILITY FUNCTIONS =====
+        function getFileIcon(type) {
+            if (type.includes('pdf')) return '📄';
+            if (type.includes('image')) return '🖼️';
+            if (type.includes('word') || type.includes('document')) return '📝';
+            return '📎';
+        }
+
+        function showSuccess(message) {
+            const msg = document.getElementById('successMessage');
+            msg.textContent = message;
+            msg.classList.add('show');
+            setTimeout(() => msg.classList.remove('show'), 3000);
+        }
+
+        function showError(message) {
+            const msg = document.getElementById('errorMessage');
+            msg.textContent = message;
+            msg.classList.add('show');
+            setTimeout(() => msg.classList.remove('show'), 3000);
+        }
+
+        // ===== SET TODAY'S DATE =====
+        document.getElementById('date').valueAsDate = new Date();
+
+        // ===== INITIALIZATION =====
+        window.addEventListener('load', loadNotices);
+    </script>
+</body>
+</html>

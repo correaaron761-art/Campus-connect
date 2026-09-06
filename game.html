@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Connect - Certificates & Points</title>
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --success-color: #48bb78;
+            --danger-color: #f56565;
+            --light-bg: #f7fafc;
+            --white: #ffffff;
+            --text-dark: #2d3748;
+            --text-light: #718096;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            min-height: 100vh;
+            padding: 20px;
+            
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: var(--white);
+            padding: 30px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .btn-home {
+            background: var(--white);
+            color: var(--primary-color);
+            padding: 12px 28px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-home:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-home:active {
+            transform: translateY(0);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .stats-section {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: var(--white);
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 40px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        }
+
+        .stats-section h2 {
+            font-size: 18px;
+            opacity: 0.95;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .total-points {
+            font-size: 56px;
+            font-weight: 800;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 25px;
+            padding-bottom: 12px;
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        .input-section {
+            background: var(--light-bg);
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border: 2px solid var(--border-color);
+        }
+
+        .input-group {
+            display: grid;
+            grid-template-columns: 1fr 150px auto;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            padding: 12px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: var(--white);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: var(--white);
+            padding: 12px 28px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-add:active {
+            transform: translateY(0);
+        }
+
+        .certificates-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .cert-card {
+            background: var(--white);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .cert-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15);
+            transform: translateY(-4px);
+        }
+
+        .cert-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .cert-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            word-break: break-word;
+            flex: 1;
+        }
+
+        .cert-icon {
+            font-size: 24px;
+        }
+
+        .cert-points {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: var(--white);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .cert-date {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 8px;
+        }
+
+        .cert-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .btn-delete {
+            flex: 1;
+            background: var(--danger-color);
+            color: var(--white);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-delete:hover {
+            background: #e53e3e;
+            transform: scale(1.02);
+        }
+
+        .cert-file {
+            margin-top: 10px;
+            padding: 10px;
+            background: var(--light-bg);
+            border-radius: 6px;
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .cert-file a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .cert-file a:hover {
+            text-decoration: underline;
+        }
+
+        .file-preview {
+            width: 100%;
+            max-height: 200px;
+            border-radius: 6px;
+            margin-top: 10px;
+            object-fit: cover;
+        }
+
+        .btn-view {
+            background: var(--success-color);
+            color: var(--white);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-view:hover {
+            background: #38a169;
+            transform: scale(1.02);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-light);
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .empty-state-text {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+                width: 100%;
+                order: -1;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .input-group {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .form-group {
+                width: 100%;
+            }
+
+            .certificates-list {
+                grid-template-columns: 1fr;
+            }
+
+            .total-points {
+                font-size: 42px;
+            }
+
+            .section-title {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header with Home Button -->
+        <div class="header">
+            <h1>🎓 My Certificates</h1>
+            <button class="btn-home" onclick="goHome()">← Back to Home</button>
+        </div>
+
+        <div class="content">
+            <!-- Total Points Display -->
+            <div class="stats-section">
+                <h2>Total Achievement Points</h2>
+                <div class="total-points" id="totalPoints">0</div>
+            </div>
+
+            <!-- Add Certificate Section -->
+            <div class="section">
+                <h2 class="section-title">➕ Add New Certificate</h2>
+                <div class="input-section">
+                    <div class="input-group">
+                        <div class="form-group">
+                            <label class="form-label">Certificate Name</label>
+                            <input 
+                                type="text" 
+                                id="certName" 
+                                class="form-input"
+                                placeholder="e.g., Python Bootcamp, Web Development..."
+                                autocomplete="off"
+                            >
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Points</label>
+                            <input 
+                                type="number" 
+                                id="certPoints" 
+                                class="form-input"
+                                placeholder="Points"
+                                min="1" 
+                                max="1000"
+                            >
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Upload File</label>
+                            <input 
+                                type="file" 
+                                id="certFile" 
+                                class="form-input"
+                                accept=".jpg,.jpeg,.png,.pdf"
+                            >
+                        </div>
+                        <button class="btn-add" onclick="addCertificate()">Add</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Certificates Display Section -->
+            <div class="section">
+                <h2 class="section-title">📜 Your Certificates</h2>
+                <div id="certificatesContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize certificates from localStorage
+        let certificates = JSON.parse(localStorage.getItem("campusConnectCerts") || "[]");
+
+        // Go back to home page
+        function goHome() {
+            window.location.href = "home.html"; // Change to your actual home page URL
+        }
+
+        // Render all certificates
+        function renderCertificates() {
+            const container = document.getElementById("certificatesContainer");
+            const totalPointsElement = document.getElementById("totalPoints");
+
+            if (certificates.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📋</div>
+                        <p class="empty-state-text">
+                            No certificates added yet.<br>
+                            Start adding your achievements to earn points!
+                        </p>
+                    </div>
+                `;
+                totalPointsElement.textContent = "0";
+                return;
+            }
+
+            let totalPoints = 0;
+            let html = '<div class="certificates-list">';
+
+            certificates.forEach((cert, index) => {
+                const date = new Date(cert.date);
+                const formattedDate = date.toLocaleDateString('en-IN', { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+
+                let filePreview = '';
+                if (cert.fileData) {
+                    filePreview = `<img src="${cert.fileData}" alt="Certificate" class="file-preview">`;
+                }
+
+                html += `
+                    <div class="cert-card">
+                        <div class="cert-header">
+                            <div class="cert-name">${escapeHtml(cert.name)}</div>
+                            <div class="cert-icon">⭐</div>
+                        </div>
+                        <div class="cert-points">${cert.points} Points</div>
+                        <div class="cert-date">Added: ${formattedDate}</div>
+                        ${filePreview}
+                        <div class="cert-actions">
+                            <button class="btn-view" onclick="viewCertificate(${index})">View File</button>
+                            <button class="btn-delete" onclick="deleteCertificate(${index})">Delete</button>
+                        </div>
+                    </div>
+                `;
+                totalPoints += cert.points;
+            });
+
+            html += '</div>';
+            container.innerHTML = html;
+            totalPointsElement.textContent = totalPoints;
+        }
+
+        // Add new certificate
+        function addCertificate() {
+            const nameInput = document.getElementById("certName");
+            const pointsInput = document.getElementById("certPoints");
+            const fileInput = document.getElementById("certFile");
+
+            const name = nameInput.value.trim();
+            const points = parseInt(pointsInput.value, 10);
+
+            // Validation
+            if (!name) {
+                alert("❌ Please enter a certificate name");
+                nameInput.focus();
+                return;
+            }
+
+            if (name.length > 100) {
+                alert("❌ Certificate name must be less than 100 characters");
+                return;
+            }
+
+            if (isNaN(points) || points <= 0) {
+                alert("❌ Please enter valid points (minimum 1)");
+                pointsInput.focus();
+                return;
+            }
+
+            if (points > 1000) {
+                alert("❌ Points cannot exceed 1000");
+                return;
+            }
+
+            // Handle file upload if selected
+            let fileData = null;
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const maxSize = 5 * 1024 * 1024; // 5MB
+
+                if (file.size > maxSize) {
+                    alert("❌ File size must be less than 5MB");
+                    return;
+                }
+
+                const validTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+                if (!validTypes.includes(file.type)) {
+                    alert("❌ Only JPG, PNG, and PDF files are allowed");
+                    return;
+                }
+
+                // Read file as data URL
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    fileData = e.target.result;
+                    saveCertificate(name, points, fileData);
+                };
+                reader.readAsDataURL(file);
+                return;
+            }
+
+            saveCertificate(name, points, fileData);
+        }
+
+        // Save certificate function
+        function saveCertificate(name, points, fileData) {
+            // Add certificate with date
+            certificates.push({
+                name: name,
+                points: points,
+                date: new Date().toISOString(),
+                fileData: fileData
+            });
+
+            // Save to localStorage
+            localStorage.setItem("campusConnectCerts", JSON.stringify(certificates));
+
+            // Clear inputs and refocus
+            document.getElementById("certName").value = "";
+            document.getElementById("certPoints").value = "";
+            document.getElementById("certFile").value = "";
+            document.getElementById("certName").focus();
+
+            // Re-render
+            renderCertificates();
+            
+            // Success feedback
+            alert(`✅ Certificate "${name}" added with ${points} points!`);
+        }
+
+        // View certificate file in modal
+        function viewCertificate(index) {
+            const cert = certificates[index];
+            if (!cert.fileData) {
+                alert("❌ No file attached to this certificate");
+                return;
+            }
+
+            // Create and display modal
+            const modal = document.createElement('div');
+            modal.id = 'fileModal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.7);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+                padding: 20px;
+            `;
+
+            const content = document.createElement('div');
+            content.style.cssText = `
+                background: var(--white);
+                border-radius: 12px;
+                max-width: 90%;
+                max-height: 90%;
+                overflow: auto;
+                padding: 20px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                position: relative;
+            `;
+
+            // Close button
+            const closeBtn = document.createElement('button');
+            closeBtn.textContent = '✕ Close';
+            closeBtn.style.cssText = `
+                position: absolute;
+                top: 15px;
+                right: 15px;
+                background: var(--danger-color);
+                color: var(--white);
+                border: none;
+                padding: 8px 15px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-weight: 600;
+                z-index: 1001;
+            `;
+            closeBtn.onclick = () => modal.remove();
+
+            // Download button
+            const downloadBtn = document.createElement('a');
+            downloadBtn.href = cert.fileData;
+            downloadBtn.download = cert.name + '.pdf';
+            downloadBtn.textContent = '⬇ Download';
+            downloadBtn.style.cssText = `
+                display: inline-block;
+                background: var(--success-color);
+                color: var(--white);
+                border: none;
+                padding: 10px 20px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-weight: 600;
+                margin-bottom: 15px;
+                text-decoration: none;
+            `;
+
+            content.appendChild(closeBtn);
+            content.appendChild(downloadBtn);
+
+            // Display file
+            if (cert.fileData.includes('data:image')) {
+                const img = document.createElement('img');
+                img.src = cert.fileData;
+                img.style.cssText = `
+                    max-width: 100%;
+                    height: auto;
+                    border-radius: 8px;
+                    margin-top: 15px;
+                `;
+                content.appendChild(img);
+            } else if (cert.fileData.includes('data:application/pdf')) {
+                const embed = document.createElement('embed');
+                embed.src = cert.fileData;
+                embed.type = 'application/pdf';
+                embed.style.cssText = `
+                    width: 100%;
+                    height: 600px;
+                    border-radius: 8px;
+                    margin-top: 15px;
+                `;
+                content.appendChild(embed);
+            }
+
+            modal.appendChild(content);
+            document.body.appendChild(modal);
+
+            // Close on background click
+            modal.onclick = (e) => {
+                if (e.target === modal) modal.remove();
+            };
+        }
+
+        // Delete certificate
+        function deleteCertificate(index) {
+            const certName = certificates[index].name;
+            
+            if (confirm(`Are you sure you want to delete "${certName}"?`)) {
+                certificates.splice(index, 1);
+                localStorage.setItem("campusConnectCerts", JSON.stringify(certificates));
+                renderCertificates();
+                alert("✅ Certificate deleted successfully!");
+            }
+        }
+
+        // Escape HTML to prevent XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Initialize on page load
+        window.addEventListener("load", function() {
+            renderCertificates();
+            document.getElementById("certName").focus();
+        });
+
+        // Allow Enter key to add certificate
+        document.getElementById("certPoints").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                addCertificate();
+            }
+        });
+
+        document.getElementById("certName").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                document.getElementById("certPoints").focus();
+            }
+        });
+    </script>
+</body>
+</html>

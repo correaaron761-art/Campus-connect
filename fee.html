@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SJEC Fee Payment Portal - CampusConnect</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .container { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); position: relative; }
+        .header-actions { display: flex; gap: 15px; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; }
+        .home-btn { background: linear-gradient(45deg, #6c757d, #5a6268); color: white; padding: 12px 24px; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s; }
+        .home-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(108,117,125,0.4); color: white; }
+        .form-group { margin-bottom: 25px; }
+        label { display: block; font-weight: 600; margin-bottom: 8px; color: #333; }
+        input, select { width: 100%; padding: 15px; border: 2px solid #e1e5e9; border-radius: 12px; font-size: 16px; box-sizing: border-box; transition: border-color 0.3s; }
+        input:focus, select:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.1); }
+        .bank-details { background: linear-gradient(135deg, #f8f9ff, #e8f0fe); padding: 20px; border-radius: 12px; border-left: 5px solid #007bff; margin: 15px 0; }
+        .pay-button { background: linear-gradient(45deg, #28a745, #20c997); color: white; padding: 18px 40px; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; width: 100%; transition: all 0.3s; }
+        .pay-button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(40,167,69,0.4); }
+        .pay-button:disabled { background: #6c757d; cursor: not-allowed; }
+        .success-message { background: linear-gradient(135deg, #d4edda, #c3e6cb); color: #155724; padding: 20px; border-radius: 12px; border-left: 6px solid #28a745; margin: 20px 0; }
+        .history-table { width: 100%; border-collapse: collapse; margin-top: 30px; }
+        .history-table th { background: linear-gradient(45deg, #007bff, #0056b3); color: white; padding: 15px; text-align: left; }
+        .history-table td { padding: 15px; border-bottom: 1px solid #eee; }
+        .history-table tr:hover { background: #f8f9fa; }
+        .upi-qr { max-width: 200px; margin: 15px auto; display: block; }
+        .footer-actions { display: flex; gap: 15px; justify-content: center; margin-top: 30px; flex-wrap: wrap; }
+        @media (max-width: 768px) { .container { padding: 20px; margin: 10px; } .header-actions, .footer-actions { flex-direction: column; width: 100%; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header with Home Button -->
+        <div class="header-actions">
+            <h1>💳 SJEC Secure Fee Payment Portal</h1>
+            <a href="home.html" class="home-btn">🏠 Home</a>
+        </div>
+        
+        <p style="color: #666; text-align: center;">CampusConnect - St Joseph Engineering College, Mangaluru</p>
+        
+        <!-- Payment Form -->
+        <form id="paymentForm">
+            <div class="form-group">
+                <label>🆔 Student Roll No:</label>
+                <input type="text" id="rollNo" placeholder="CS101-001" required>
+            </div>
+            
+            <div class="form-group">
+                <label>📚 Fee Type:</label>
+                <select id="feeType" required onchange="updateAmount()">
+                    <option value="">Select Fee Type</option>
+                    <option value="tuition" data-amount="50000">🎓 Tuition Fee - ₹50,000 (Semester)</option>
+                    <option value="hostel" data-amount="25000">🏠 Hostel Fee - ₹25,000 (Semester)</option>
+                    <option value="library" data-amount="5000">📚 Library Fee - ₹5,000 (Annual)</option>
+                    <option value="exam" data-amount="2000">📝 Exam Fee - ₹2,000 (Semester)</option>
+                    <option value="lab" data-amount="3000">🔬 Lab Fee - ₹3,000 (Semester)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>💰 Amount Payable:</label>
+                <input type="text" id="amountDisplay" readonly style="background: #f8f9fa; font-weight: bold; font-size: 20px; color: #28a745;">
+                <input type="hidden" id="amount" name="amount">
+            </div>
+            
+            <div class="form-group">
+                <label>🏦 SJEC Bank Details (Net Banking/NEFT)</label>
+                <div class="bank-details">
+                    <div><strong>🌟 Account Name:</strong> St Joseph Engineering College</div>
+                    <div><strong>🏛️ Bank:</strong> State Bank of India (SBI)</div>
+                    <div><strong>👤 Account No:</strong> 123456789012</div>
+                    <div><strong>🌐 IFSC Code:</strong> SBIN0001234</div>
+                    <div><strong>📍 Branch:</strong> Vamanjoor, Mangaluru</div>
+                    <div style="margin-top:15px;">
+                        <strong>💳 UPI Payment:</strong> <code>sjec@pay</code>
+                        <br><img src="https://via.placeholder.com/200x200/007bff/ffffff?text=SJEC+UPI+QR" alt="UPI QR" class="upi-qr">
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit" id="payButton" class="pay-button" disabled>
+                🔒 Proceed to Secure Payment
+            </button>
+        </form>
+        
+        <div id="paymentStatus"></div>
+        
+        <!-- Payment History -->
+        <div id="historySection" style="display:none;">
+            <h2>📋 Payment History</h2>
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Date & Time</th>
+                        <th>Roll No</th>
+                        <th>Fee Type</th>
+                        <th>Amount</th>
+                        <th>Payment ID</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="historyBody"></tbody>
+            </table>
+        </div>
+        
+        <!-- Footer with Home Button -->
+        <div class="footer-actions">
+            <a href="home.html" class="home-btn">🏠 Return to Home Page</a>
+         
+        </div>
+    </div>
+
+    <!-- All existing JavaScript remains exactly the same -->
+    <script>
+        // Razorpay Key (Replace with your live key)
+        const razorpayKey = 'rzp_test_xxxxxxxxxxxxxxxxx'; // Get from Razorpay Dashboard
+        
+        // Load payment history
+        let paymentHistory = JSON.parse(localStorage.getItem('sjecFeePayments')) || [];
+        
+        // Update amount display
+        function updateAmount() {
+            const feeType = document.getElementById('feeType');
+            const amountInput = document.getElementById('amount');
+            const displayInput = document.getElementById('amountDisplay');
+            const payButton = document.getElementById('payButton');
+            
+            if (feeType.value) {
+                const amount = parseInt(feeType.selectedOptions[0].dataset.amount);
+                amountInput.value = amount;
+                displayInput.value = `₹${amount.toLocaleString('en-IN')}`;
+                payButton.disabled = false;
+            } else {
+                amountInput.value = '';
+                displayInput.value = '';
+                payButton.disabled = true;
+            }
+        }
+        
+        // [Rest of your existing JavaScript code - unchanged]
+        document.getElementById('paymentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const rollNo = document.getElementById('rollNo').value;
+            const feeType = document.getElementById('feeType');
+            const amount = parseInt(document.getElementById('amount').value);
+            const payButton = document.getElementById('payButton');
+            
+            payButton.disabled = true;
+            payButton.innerHTML = '⏳ Processing Payment...';
+            
+            const options = {
+                key: razorpayKey,
+                amount: amount * 100,
+                currency: 'INR',
+                name: 'SJEC CampusConnect',
+                description: `${feeType.selectedOptions[0].text}`,
+                image: 'https://via.placeholder.com/150/007bff/ffffff?text=SJEC',
+                handler: function(response) {
+                    completePayment(response, rollNo, feeType.selectedOptions[0].text, amount);
+                },
+                prefill: { name: rollNo, contact: '' },
+                theme: { color: '#007bff' }
+            };
+            
+            const rzp = new Razorpay(options);
+            rzp.open();
+        });
+        
+        function completePayment(response, rollNo, feeType, amount) {
+            const payment = {
+                id: response.razorpay_payment_id,
+                rollNo, feeType, amount,
+                date: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
+                status: 'SUCCESS ✅',
+                orderId: response.razorpay_order_id,
+                signature: response.razorpay_signature
+            };
+            
+            paymentHistory.unshift(payment);
+            localStorage.setItem('sjecFeePayments', JSON.stringify(paymentHistory));
+            showPaymentStatus('success', payment);
+            updateHistory();
+            
+            if (window.earnPoints) earnPoints('payment', 200);
+            document.getElementById('paymentForm').reset();
+            updateAmount();
+        }
+        
+        function showPaymentStatus(type, payment) {
+            const statusDiv = document.getElementById('paymentStatus');
+            if (type === 'success') {
+                statusDiv.innerHTML = `
+                    <div class="success-message">
+                        <h3>✅ Payment Successful!</h3>
+                        <p><strong>Transaction ID:</strong> ${payment.id}</p>
+                        <p><strong>Amount:</strong> ₹${payment.amount.toLocaleString('en-IN')}</p>
+                        <p><strong>Fee Type:</strong> ${payment.feeType}</p>
+                        <button onclick="downloadReceipt('${payment.id}')" class="pay-button" style="width:auto;padding:12px 24px;margin-top:15px;">📄 Download Receipt</button>
+                    </div>
+                `;
+                document.getElementById('historySection').style.display = 'block';
+            }
+        }
+        
+        function updateHistory() {
+            const tbody = document.getElementById('historyBody');
+            tbody.innerHTML = '';
+            paymentHistory.slice(0, 10).forEach(payment => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${payment.date}</td>
+                    <td><strong>${payment.rollNo}</strong></td>
+                    <td>${payment.feeType}</td>
+                    <td>₹${payment.amount.toLocaleString('en-IN')}</td>
+                    <td>${payment.id}</td>
+                    <td style="color: #28a745; font-weight: bold;">${payment.status}</td>
+                    <td><button onclick="downloadReceipt('${payment.id}')" style="background:#007bff;padding:8px 16px;border:none;border-radius:6px;color:white;cursor:pointer;">Receipt</button></td>
+                `;
+            });
+        }
+        
+        function downloadReceipt(paymentId) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const payment = paymentHistory.find(p => p.id === paymentId);
+            
+            doc.setFontSize(22);
+            doc.text('PAYMENT RECEIPT', 105, 30, { align: 'center' });
+            doc.setFontSize(14);
+            doc.text('St Joseph Engineering College (SJEC)', 105, 50, { align: 'center' });
+            doc.text('Vamanjoor, Mangaluru - 575028, Karnataka', 105, 60, { align: 'center' });
+            doc.text('CampusConnect Digital Payment Portal', 105, 70, { align: 'center' });
+            
+            doc.setFontSize(12);
+            doc.text('═' + '═'.repeat(65) + '═', 10, 85);
+            doc.text('Transaction Details:', 20, 95);
+            doc.text(`Receipt No: ${payment.id}`, 20, 105);
+            doc.text(`Student Roll No: ${payment.rollNo}`, 20, 115);
+            doc.text(`Fee Type: ${payment.feeType}`, 20, 125);
+            doc.text(`Amount Paid: ₹${payment.amount.toLocaleString('en-IN')}`, 20, 135);
+            doc.text(`Payment Date: ${payment.date}`, 20, 145);
+            doc.text(`Payment Gateway: Razorpay`, 20, 155);
+            doc.text(`Order ID: ${payment.orderId}`, 20, 165);
+            
+            doc.text('═' + '═'.repeat(65) + '═', 10, 180);
+            doc.text('Thank you for your payment!', 105, 200, { align: 'center' });
+            
+            doc.save(`SJEC_Receipt_${payment.id}.pdf`);
+        }
+        
+        // Initialize
+        updateHistory();
+    </script>
+</body>
+</html>

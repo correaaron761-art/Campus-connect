@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual ID & QR Scanner - CampusConnect SJEC</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; background: #f0f2f5; }
+        .container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .panel { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); }
+        .qr-code { text-align: center; margin: 20px 0; }
+        #studentQR { width: 250px; height: 250px; border: 4px solid #007bff; border-radius: 15px; }
+        .video-container { position: relative; width: 100%; max-width: 400px; margin: 0 auto; }
+        #scannerVideo { width: 100%; border-radius: 10px; }
+        .scan-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: transparent; }
+        .scan-frame { stroke: #00ff00; stroke-width: 4; fill: none; stroke-dasharray: 10 5; animation: scan 2s infinite; }
+        @keyframes scan { 0%, 100% { stroke-dashoffset: 0; } 50% { stroke-dashoffset: 20; } }
+        .status-success { background: #d4edda; color: #155724; padding: 15px; border-radius: 10px; border-left: 5px solid #28a745; }
+        .status-error { background: #f8d7da; color: #721c24; padding: 15px; border-radius: 10px; border-left: 5px solid #dc3545; }
+        button { background: linear-gradient(45deg, #007bff, #0056b3); color: white; border: none; padding: 12px 24px; border-radius: 25px; cursor: pointer; font-weight: bold; transition: all 0.3s; }
+        button:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(0,123,255,0.3); }
+        .id-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 15px; text-align: center; }
+        @media (max-width: 768px) { .container { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <h1>🆔 Virtual ID & QR Attendance - CampusConnect SJEC</h1>
+    
+    <div class="container">
+        <!-- Student QR Generator -->
+        <div class="panel">
+            <h2>🎫 Generate My Virtual ID</h2>
+            <div class="id-card">
+                <input type="text" id="studentRollNo" placeholder="Enter Roll No (CS101-001)" style="width:100%;padding:12px;margin-bottom:15px;border-radius:10px;border:none;font-size:16px;">
+                <button onclick="generateQR()">Generate QR ID</button>
+            </div>
+            
+            <div class="qr-code" id="qrContainer" style="display:none;">
+                <h3>My Virtual ID</h3>
+                <canvas id="studentQR"></canvas>
+                <p><strong>Scan for Attendance/Access</strong></p>
+                <button onclick="downloadQR()">💾 Download QR</button>
+                <button onclick="copyToClipboard()">📋 Copy ID Data</button>
+            </div>
+            
+            <div id="studentStatus"></div>
+        </div>
+
+        <!-- Faculty Scanner -->
+        <div class="panel">
+            <h2>🔍 Faculty Scanner (Live)</h2>
+            <div class="video-container">
+                <video id="scannerVideo" autoplay playsinline></video>
+                <canvas id="scanCanvas" style="display:none;"></canvas>
+                <svg class="scan-overlay" viewBox="0 0 400 400">
+                    <rect x="50" y="50" width="300" height="300" class="scan-frame"/>
+                </svg>
+            </div>
+            
+            <div style="text-align:center;margin-top:20px;">
+                <button onclick="toggleScanner()">Start/Stop Scanner</button>
+                <button onclick="markAttendance()">Quick Manual Entry</button>
+            </div>
+            
+            <div id="scanResults"></div>
+        </div>
+    </div>
+
+    <script>
+        // Student profiles (linked with attendance/payment systems)
+        const studentProfiles = JSON.parse(localStorage.getItem('campusConnectStudents')) || {
+            'CS101-001': { name: 'John Doe', dept: 'CS', year: 2, status: 'active', points: 1250 },
+            'CS101-002': { name: 'Jane Smith', dept: 'CS', year: 2, status: 'active', points: 980 },
+            'EC201-001': { name: 'Rahul Kumar', dept: 'EC', year: 2, status: 'active', points: 750 }
+        };
+
+        let isScanning = false;
+        let stream = null;
+
+        // Generate QR Code
+        async function generateQR() {
+            const rollNo = document.getElementById('studentRollNo').value;
+            if (!rollNo || !studentProfiles[rollNo]) {
+                showStatus('Student not found! Add to profiles first.', 'error');
+                return;
+            }
+            
+            const studentData = {
+                rollNo,
+                name: studentProfiles[rollNo].name,
+                dept: studentProfiles[rollNo].dept,
+                timestamp: new Date().toISOString(),
+                signature: btoa(rollNo + Date.now()) // Simple verification
+            };
+            
+            const qrContainer = document.getElementById('qrContainer');
+            qrContainer.style.display = 'block';
+            
+            // Generate QR
+            const canvas = document.getElementById('studentQR');
+            await QRCode.toCanvas(canvas, JSON.stringify(studentData), {
+                width: 250,
+                margin: 2,
+                color: { dark: '#000000', light: '#FFFFFF' }
+            });
+            
+            showStatus(`✅ QR generated for ${studentData.name}! Ready for scanning.`, 'success');
+        }
+
+        // Download QR as PNG
+        function downloadQR() {
+            const canvas = document.getElementById('studentQR');
+            const link = document.createElement('a');
+            link.download = 'SJEC_Virtual_ID.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+
+        // Copy student data
+        function copyToClipboard() {
+            const rollNo = document.getElementById('studentRollNo').value;
+            const data = JSON.stringify({ rollNo, timestamp: new Date().toISOString() });
+            navigator.clipboard.writeText(data);
+            showStatus('ID data copied to clipboard!', 'success');
+        }
+
+        // Scanner setup
+        async function toggleScanner() {
+            const video = document.getElementById('scannerVideo');
+            
+            if (isScanning) {
+                stopScanner();
+                return;
+            }
+            
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                video.srcObject = stream;
+                video.play();
+                isScanning = true;
+                scanContinuously();
+                showStatus('🔍 Scanner active - point at QR codes!', 'success');
+            } catch (err) {
+                showStatus('Camera access denied!', 'error');
+            }
+        }
+
+        function stopScanner() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+            isScanning = false;
+            document.getElementById('scanResults').innerHTML = '';
+        }
+
+        // Continuous QR scanning
+        function scanContinuously() {
+            if (!isScanning) return;
+            
+            const video = document.getElementById('scannerVideo');
+            const canvas = document.getElementById('scanCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const code = jsQR(imageData.data, imageData.width, imageData.height);
+            
+            if (code) {
+                try {
+                    const studentData = JSON.parse(code.data);
+                    processScannedStudent(studentData);
+                } catch (e) {
+                    console.log('Invalid QR data');
+                }
+            }
+            
+            requestAnimationFrame(scanContinuously);
+        }
+
+        // Process scanned student
+        function processScannedStudent(data) {
+            const rollNo = data.rollNo;
+            if (!studentProfiles[rollNo]) {
+                showScanResult(rollNo, 'Unknown Student', 'error');
+                return;
+            }
+            
+            // Mark attendance (integrates with your tracker)
+            markAttendance(rollNo, 'present');
+            
+            // Award gamification points
+            if (window.earnPoints) earnPoints('attendance', 50);
+            
+            showScanResult(rollNo, studentProfiles[rollNo].name, 'success');
+        }
+
+        // Manual attendance marking
+        function markAttendance(rollNo = null) {
+            if (!rollNo) {
+                rollNo = prompt('Enter Roll No:');
+            }
+            if (rollNo && studentProfiles[rollNo]) {
+                showScanResult(rollNo, studentProfiles[rollNo].name, 'success');
+            }
+        }
+
+        // Display scan results
+        function showScanResult(rollNo, name, type) {
+            const results = document.getElementById('scanResults');
+            const statusClass = type === 'success' ? 'status-success' : 'status-error';
+            results.innerHTML = `
+                <div class="${statusClass}">
+                    <strong>${type === 'success' ? '✅ VERIFIED' : '❌ REJECTED'}</strong><br>
+                    Roll No: ${rollNo}<br>
+                    Name: ${name || 'Unknown'}<br>
+                    Time: ${new Date().toLocaleTimeString('en-IN')}
+                    ${type === 'success' ? '<br><small>Attendance marked + Gamification points awarded!</small>' : ''}
+                </div>
+            `;
+        }
+
+        // Status messages
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('studentStatus');
+            statusDiv.innerHTML = `<div class="${type === 'success' ? 'status-success' : 'status-error'}">${message}</div>`;
+            setTimeout(() => statusDiv.innerHTML = '', 5000);
+        }
+
+        // Save student profile
+        window.saveStudentProfile = function(rollNo, profile) {
+            studentProfiles[rollNo] = profile;
+            localStorage.setItem('campusConnectStudents', JSON.stringify(studentProfiles));
+        };
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', stopScanner);
+    </script>
+</body>
+</html>

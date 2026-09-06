@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Tracker - CampusConnect</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; background: #f4f4f4; }
+        .container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .panel { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .status.present { background: #2ecc71; color: white; padding: 5px 10px; border-radius: 20px; }
+        .status.absent { background: #e74c3c; color: white; padding: 5px 10px; border-radius: 20px; }
+        .status.leave { background: #f39c12; color: white; padding: 5px 10px; border-radius: 20px; }
+        button { background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; margin: 2px; }
+        button:hover { background: #0056b3; }
+        #qrCode { width: 200px; height: 200px; border: 2px dashed #007bff; display: flex; align-items: center; justify-content: center; font-size: 12px; margin: 10px 0; }
+        .live-indicator { display: inline-block; width: 10px; height: 10px; background: #2ecc71; border-radius: 50%; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        @media (max-width: 768px) { .container { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <h1>🟢 Live Attendance Tracker - CampusConnect</h1>
+    <div class="container">
+        <!-- Faculty Panel -->
+        <div class="panel">
+            <h2>Faculty: Mark Attendance</h2>
+            <select id="classSelect">
+                <option value="CS101">CS101 - Programming</option>
+                <option value="EC201">EC201 - Circuits</option>
+                <option value="ME301">ME301 - Mechanics</option>
+            </select>
+            <br><br>
+            
+            <div id="studentList"></div>
+            <div id="summary">
+                <h3>Live Summary</h3>
+                <p>Total: <span id="total">0</span> | Present: <span id="present">0</span> | Absent: <span id="absent">0</span> | Leave: <span id="leave">0</span></p>
+            </div>
+            
+            <div id="qrCode">Scan QR for Check-in<br>(Session Active)</div>
+        </div>
+
+        <!-- Student Panel -->
+        <div class="panel">
+            <h2>Student: Live Status</h2>
+            <input type="text" id="studentId" placeholder="Enter Roll No (e.g., CS101-001)" style="width:100%; padding:10px; margin-bottom:10px;">
+            <button onclick="checkAttendance()">Check My Status</button>
+            <div id="myStatus" style="margin-top:20px; font-size:18px;"></div>
+            
+            <h3>All Students <span class="live-indicator"></span></h3>
+            <div id="liveList"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentClass = 'CS101';
+        let attendanceData = JSON.parse(localStorage.getItem('attendance_' + currentClass)) || [];
+
+        // Sample students
+        const students = {
+            'CS101': ['CS101-001', 'CS101-002', 'CS101-003', 'CS101-004', 'CS101-005'],
+            'EC201': ['EC201-001', 'EC201-002', 'EC201-003'],
+            'ME301': ['ME301-001', 'ME301-002']
+        };
+
+        // Update student list for faculty
+        function updateFacultyView() {
+            const className = document.getElementById('classSelect').value;
+            currentClass = className;
+            attendanceData = JSON.parse(localStorage.getItem('attendance_' + className)) || [];
+            
+            const list = document.getElementById('studentList');
+            list.innerHTML = '';
+            students[className].forEach(rollNo => {
+                const status = getStudentStatus(rollNo) || 'absent';
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <strong>${rollNo}</strong> 
+                    <span class="status ${status}">${status.toUpperCase()}</span>
+                    <button onclick="markAttendance('${rollNo}', 'present')">Present</button>
+                    <button onclick="markAttendance('${rollNo}', 'absent')">Absent</button>
+                    <button onclick="markAttendance('${rollNo}', 'leave')">Leave</button>
+                `;
+                list.appendChild(div);
+            });
+            updateSummary();
+        }
+
+        // Mark attendance (triggers live update)
+        function markAttendance(rollNo, status) {
+            const record = { rollNo, status, timestamp: new Date().toISOString(), class: currentClass };
+            const index = attendanceData.findIndex(r => r.rollNo === rollNo);
+            if (index > -1) attendanceData[index] = record;
+            else attendanceData.push(record);
+            
+            localStorage.setItem('attendance_' + currentClass, JSON.stringify(attendanceData));
+            
+            // Broadcast live update (SSE simulation)
+            broadcastUpdate();
+            updateFacultyView();
+        }
+
+        // Get student status
+        function getStudentStatus(rollNo) {
+            const record = attendanceData.find(r => r.rollNo === rollNo);
+            return record ? record.status : null;
+        }
+
+        // Update summary
+        function updateSummary() {
+            const present = attendanceData.filter(r => r.status === 'present').length;
+            const absent = attendanceData.filter(r => r.status === 'absent').length;
+            const leave = attendanceData.filter(r => r.status === 'leave').length;
+            document.getElementById('total').textContent = students[currentClass].length;
+            document.getElementById('present').textContent = present;
+            document.getElementById('absent').textContent = absent;
+            document.getElementById('leave').textContent = leave;
+        }
+
+        // Student check status
+        function checkAttendance() {
+            const rollNo = document.getElementById('studentId').value;
+            const status = getStudentStatus(rollNo);
+            const statusDiv = document.getElementById('myStatus');
+            if (status) {
+                statusDiv.innerHTML = `<span class="status ${status}">✅ ${status.toUpperCase()}!</span> Last updated: ${new Date().toLocaleTimeString()}`;
+            } else {
+                statusDiv.innerHTML = '❌ No record found';
+            }
+        }
+
+        // Live updates for all viewers
+        function broadcastUpdate() {
+            // Simulate SSE - In production, send to server
+            updateLiveView();
+        }
+
+        function updateLiveView() {
+            const list = document.getElementById('liveList');
+            list.innerHTML = '';
+            students[currentClass].forEach(rollNo => {
+                const status = getStudentStatus(rollNo);
+                const div = document.createElement('div');
+                div.innerHTML = `${rollNo}: <span class="status ${status || 'absent'}">${status || 'Absent'}</span>`;
+                list.appendChild(div);
+            });
+        }
+
+        // Event listeners
+        document.getElementById('classSelect').addEventListener('change', updateFacultyView);
+        
+        // Auto-refresh every 3 seconds (live tracking)
+        setInterval(updateLiveView, 3000);
+
+        // QR Code Check-in (simulate)
+        document.getElementById('qrCode').onclick = () => {
+            const rollNo = prompt('Enter Roll No for QR Check-in:');
+            if (rollNo && students[currentClass].includes(rollNo)) {
+                markAttendance(rollNo, 'present');
+                alert(`${rollNo} marked PRESENT via QR!`);
+            }
+        };
+
+        // Initialize
+        updateFacultyView();
+        updateLiveView();
+    </script>
+</body>
+</html>

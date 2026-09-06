@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Documents - SJEC Info Chat</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header-content h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .header-content p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .back-btn {
+            padding: 10px 20px;
+            background: #667eea;
+            color: #fff;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .back-btn:hover {
+            background: #764ba2;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tab-btn {
+            padding: 12px 30px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: 0.3s;
+            color: #333;
+        }
+
+        .tab-btn.active {
+            background: #667eea;
+            color: #fff;
+        }
+
+        .tab-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .upload-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .upload-section h2 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+            font-family: "Poppins", sans-serif;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .file-upload {
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .file-upload:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #764ba2;
+        }
+
+        .file-upload i {
+            font-size: 40px;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .file-upload p {
+            color: #666;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-list {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 10px;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .file-item:last-child {
+            border-bottom: none;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .file-icon {
+            font-size: 20px;
+            color: #667eea;
+        }
+
+        .file-details {
+            flex: 1;
+        }
+
+        .file-name {
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .file-size {
+            color: #999;
+            font-size: 12px;
+        }
+
+        .btn-remove {
+            background: #ff6b6b;
+            color: #fff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: 0.3s;
+        }
+
+        .btn-remove:hover {
+            background: #ff5252;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border: none;
+            padding: 14px 40px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .success-msg {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            border: 1px solid #c3e6cb;
+        }
+
+        .success-msg.show {
+            display: block;
+        }
+
+        .error-msg {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            border: 1px solid #f5c6cb;
+        }
+
+        .error-msg.show {
+            display: block;
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            color: #004085;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .upload-section {
+                padding: 20px;
+            }
+
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .header-content h1 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <h1>⬆️ Upload Documents</h1>
+                <p>Add notices and events with documents for the college community</p>
+            </div>
+            <a href="home.html" class="back-btn">← Back to Home</a>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('notice')">📢 Upload Notice</button>
+            <button class="tab-btn" onclick="switchTab('event')">🎉 Upload Event</button>
+        </div>
+
+        <!-- NOTICE TAB -->
+        <div id="notice-tab" class="tab-content active">
+            <div class="upload-section">
+                <h2><i class="fas fa-plus-circle"></i> Add New Notice</h2>
+
+                <div class="info-box">
+                    📌 Fill in the notice details below and upload supporting documents (PDF, Word, Images)
+                </div>
+
+                <div class="success-msg" id="noticeSuccessMsg">
+                    ✅ Notice uploaded successfully! It will appear on the homepage immediately.
+                </div>
+
+                <form id="noticeForm" onsubmit="uploadNotice(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="noticeTitle">Notice Title *</label>
+                            <input type="text" id="noticeTitle" required placeholder="e.g., Semester Exam Schedule Released">
+                        </div>
+                        <div class="form-group">
+                            <label for="noticeCategory">Category *</label>
+                            <select id="noticeCategory" required>
+                                <option value="">Select Category</option>
+                                <option value="Academic">Academic</option>
+                                <option value="Finance">Finance</option>
+                                <option value="Placement">Placement</option>
+                                <option value="General">General</option>
+                                <option value="Infrastructure">Infrastructure</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="noticePriority">Priority *</label>
+                            <select id="noticePriority" required>
+                                <option value="">Select Priority</option>
+                                <option value="high">High</option>
+                                <option value="medium">Medium</option>
+                                <option value="low">Low</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="noticeIcon">Icon (Emoji) *</label>
+                            <input type="text" id="noticeIcon" required placeholder="e.g., 📚" maxlength="2" value="📌">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="noticeDescription">Description *</label>
+                        <textarea id="noticeDescription" required placeholder="Enter detailed description of the notice..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Upload Documents (Optional)</label>
+                        <div class="file-upload" onclick="document.getElementById('noticeFiles').click()">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Click to upload or drag files here</p>
+                            <p style="font-size: 12px; color: #999; margin-top: 5px;">PDF, DOC, DOCX, JPG, PNG (Max 10MB each)</p>
+                        </div>
+                        <input type="file" id="noticeFiles" class="file-input" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onchange="handleNoticeFiles(event)">
+                        <div class="file-list" id="noticeFileList"></div>
+                    </div>
+
+                    <button type="submit" class="btn-submit">📤 Upload Notice</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- EVENT TAB -->
+        <div id="event-tab" class="tab-content">
+            <div class="upload-section">
+                <h2><i class="fas fa-plus-circle"></i> Add New Event</h2>
+
+                <div class="info-box">
+                    📌 Fill in the event details below and upload supporting documents (Posters, schedules, etc.)
+                </div>
+
+                <div class="success-msg" id="eventSuccessMsg">
+                    ✅ Event uploaded successfully! It will appear on the homepage immediately.
+                </div>
+
+                <form id="eventForm" onsubmit="uploadEvent(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="eventTitle">Event Title *</label>
+                            <input type="text" id="eventTitle" required placeholder="e.g., TCS Campus Recruitment Drive">
+                        </div>
+                        <div class="form-group">
+                            <label for="eventCategory">Category *</label>
+                            <select id="eventCategory" required>
+                                <option value="">Select Category</option>
+                                <option value="Placement">Placement</option>
+                                <option value="Academic">Academic</option>
+                                <option value="Sports">Sports</option>
+                                <option value="Cultural">Cultural</option>
+                                <option value="Career">Career</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="eventDate">Event Date *</label>
+                            <input type="date" id="eventDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="eventIcon">Icon (Emoji) *</label>
+                            <input type="text" id="eventIcon" required placeholder="e.g., 🏢" maxlength="2" value="🎉">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="eventTime">Time *</label>
+                            <input type="text" id="eventTime" required placeholder="e.g., 9:00 AM - 4:00 PM">
+                        </div>
+                        <div class="form-group">
+                            <label for="eventLocation">Location *</label>
+                            <input type="text" id="eventLocation" required placeholder="e.g., Main Auditorium">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="eventCapacity">Capacity *</label>
+                            <input type="number" id="eventCapacity" required placeholder="e.g., 150" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="eventRegistered">Currently Registered</label>
+                            <input type="number" id="eventRegistered" placeholder="e.g., 98" value="0" min="0">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="eventDescription">Description *</label>
+                        <textarea id="eventDescription" required placeholder="Enter detailed description of the event..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Upload Documents (Optional)</label>
+                        <div class="file-upload" onclick="document.getElementById('eventFiles').click()">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Click to upload or drag files here</p>
+                            <p style="font-size: 12px; color: #999; margin-top: 5px;">PDF, JPG, PNG (Max 10MB each)</p>
+                        </div>
+                        <input type="file" id="eventFiles" class="file-input" multiple accept=".pdf,.jpg,.jpeg,.png" onchange="handleEventFiles(event)">
+                        <div class="file-list" id="eventFileList"></div>
+                    </div>
+
+                    <button type="submit" class="btn-submit">📤 Upload Event</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let noticeFiles = [];
+        let eventFiles = [];
+
+        // Switch between tabs
+        function switchTab(tabName) {
+            const noticeTab = document.getElementById('notice-tab');
+            const eventTab = document.getElementById('event-tab');
+            const buttons = document.querySelectorAll('.tab-btn');
+
+            if(tabName === 'notice') {
+                noticeTab.classList.add('active');
+                eventTab.classList.remove('active');
+                buttons[0].classList.add('active');
+                buttons[1].classList.remove('active');
+            } else {
+                noticeTab.classList.remove('active');
+                eventTab.classList.add('active');
+                buttons[0].classList.remove('active');
+                buttons[1].classList.add('active');
+            }
+        }
+
+        // Handle notice files
+        function handleNoticeFiles(e) {
+            noticeFiles = Array.from(e.target.files);
+            displayFileList('noticeFileList', noticeFiles, 'removeNoticeFile');
+        }
+
+        // Handle event files
+        function handleEventFiles(e) {
+            eventFiles = Array.from(e.target.files);
+            displayFileList('eventFileList', eventFiles, 'removeEventFile');
+        }
+
+        // Display file list
+        function displayFileList(elementId, files, removeFunction) {
+            const container = document.getElementById(elementId);
+            container.innerHTML = '';
+
+            if(files.length === 0) {
+                container.innerHTML = '<p style="color: #999; text-align: center; padding: 10px;">No files selected</p>';
+                return;
+            }
+
+            files.forEach((file, index) => {
+                const fileSize = (file.size / 1024 / 1024).toFixed(2);
+                const fileIcon = getFileIcon(file.type);
+                
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <div class="file-info">
+                        <div class="file-icon">${fileIcon}</div>
+                        <div class="file-details">
+                            <div class="file-name">${file.name}</div>
+                            <div class="file-size">${fileSize} MB</div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-remove" onclick="${removeFunction}(${index})">Remove</button>
+                `;
+                container.appendChild(fileItem);
+            });
+        }
+
+        // Get file icon based on type
+        function getFileIcon(type) {
+            if(type.includes('pdf')) return '📄';
+            if(type.includes('word') || type.includes('document')) return '📝';
+            if(type.includes('image')) return '🖼️';
+            return '📎';
+        }
+
+        // Remove notice file
+        function removeNoticeFile(index) {
+            noticeFiles.splice(index, 1);
+            displayFileList('noticeFileList', noticeFiles, 'removeNoticeFile');
+        }
+
+        // Remove event file
+        function removeEventFile(index) {
+            eventFiles.splice(index, 1);
+            displayFileList('eventFileList', eventFiles, 'removeEventFile');
+        }
+
+        // Upload Notice
+        function uploadNotice(e) {
+            e.preventDefault();
+
+            const notice = {
+                id: Date.now(),
+                date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
+                title: document.getElementById('noticeTitle').value,
+                description: document.getElementById('noticeDescription').value,
+                category: document.getElementById('noticeCategory').value,
+                priority: document.getElementById('noticePriority').value,
+                icon: document.getElementById('noticeIcon').value,
+                files: noticeFiles.map(f => ({
+                    name: f.name,
+                    size: f.size,
+                    type: f.type
+                }))
+            };
+
+            // Get existing notices
+            let noticesData = JSON.parse(localStorage.getItem('noticesData')) || [];
+            noticesData.push(notice);
+            localStorage.setItem('noticesData', JSON.stringify(noticesData));
+
+            // Show success message
+            const successMsg = document.getElementById('noticeSuccessMsg');
+            successMsg.classList.add('show');
+            setTimeout(() => successMsg.classList.remove('show'), 4000);
+
+            // Reset form
+            document.getElementById('noticeForm').reset();
+            noticeFiles = [];
+            document.getElementById('noticeFileList').innerHTML = '';
+        }
+
+        // Upload Event
+        function uploadEvent(e) {
+            e.preventDefault();
+
+            const eventDate = new Date(document.getElementById('eventDate').value);
+            const day = String(eventDate.getDate()).padStart(2, '0');
+            const month = eventDate.toLocaleString('en-US', { month: 'short' });
+
+            const eventObj = {
+                id: Date.now(),
+                date: document.getElementById('eventDate').value,
+                day: day,
+                month: month,
+                title: document.getElementById('eventTitle').value,
+                description: document.getElementById('eventDescription').value,
+                time: document.getElementById('eventTime').value,
+                location: document.getElementById('eventLocation').value,
+                category: document.getElementById('eventCategory').value,
+                capacity: parseInt(document.getElementById('eventCapacity').value),
+                registered: parseInt(document.getElementById('eventRegistered').value),
+                image: document.getElementById('eventIcon').value,
+                files: eventFiles.map(f => ({
+                    name: f.name,
+                    size: f.size,
+                    type: f.type
+                }))
+            };
+
+            // Get existing events
+            let eventsData = JSON.parse(localStorage.getItem('eventsData')) || [];
+            eventsData.push(eventObj);
+            localStorage.setItem('eventsData', JSON.stringify(eventsData));
+
+            // Show success message
+            const successMsg = document.getElementById('eventSuccessMsg');
+            successMsg.classList.add('show');
+            setTimeout(() => successMsg.classList.remove('show'), 4000);
+
+            // Reset form
+            document.getElementById('eventForm').reset();
+            eventFiles = [];
+            document.getElementById('eventFileList').innerHTML = '';
+        }
+    </script>
+</body>
+</html>

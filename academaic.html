@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Portal - CampusConnect</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL@48,400,0&display=swap">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7ff 0%, #e8ecff 100%);
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            margin-bottom: 2rem;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .nav-btn {
+            padding: 0.7rem 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* ===== PAGE TITLE ===== */
+        .page-title {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 3rem;
+        }
+
+        /* ===== TABS ===== */
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .tab-btn {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* ===== DASHBOARD STATS ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            border-top: 4px solid #667eea;
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        /* ===== ASSIGNMENT SECTION ===== */
+        .assignment-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 3rem;
+        }
+
+        .assignment-section h2 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        input, select, textarea {
+            padding: 0.8rem;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.2);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+            grid-column: 1 / -1;
+        }
+
+        .file-upload-area {
+            grid-column: 1 / -1;
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f8f9ff;
+        }
+
+        .file-upload-area:hover {
+            background: #f0f2ff;
+            border-color: #764ba2;
+        }
+
+        .file-upload-area span {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .file-name {
+            color: #667eea;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .btn-container {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 0.9rem 2rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        /* ===== ASSIGNMENTS LIST ===== */
+        .assignments-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .assignment-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #667eea;
+            transition: all 0.3s;
+        }
+
+        .assignment-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .assignment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .assignment-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .assignment-status {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-submitted {
+            background: #d4f4dd;
+            color: #1e7e34;
+        }
+
+        .status-pending {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .status-graded {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .assignment-info {
+            font-size: 0.9rem;
+            color: #666;
+            margin: 0.8rem 0;
+        }
+
+        .assignment-actions {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 0.6rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+
+        .btn-download {
+            background: #d4f4dd;
+            color: #1e7e34;
+        }
+
+        .btn-delete {
+            background: #ffe6e6;
+            color: #c00;
+        }
+
+        /* ===== GRADES TABLE ===== */
+        .grades-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        thead {
+            background: #f8f9fa;
+            border-bottom: 2px solid #ddd;
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .grade-badge {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .grade-a {
+            background: #d4f4dd;
+            color: #1e7e34;
+        }
+
+        .grade-b {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .grade-c {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        /* ===== COURSE MATERIALS ===== */
+        .materials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .material-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .material-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.2);
+        }
+
+        .material-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .material-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .material-subject {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .btn-download-material {
+            width: 100%;
+            padding: 0.8rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-download-material:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #999;
+        }
+
+        .empty-state span {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        /* ===== MESSAGES ===== */
+        .message {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .success {
+            background: #d4f4dd;
+            color: #1e7e34;
+            border-left: 4px solid #1e7e34;
+        }
+
+        .error {
+            background: #ffe6e6;
+            color: #c00;
+            border-left: 4px solid #c00;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-title {
+                font-size: 1.8rem;
+            }
+
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .assignments-list, .materials-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">📚 CampusConnect Academic Portal</div>
+                <a href="home.html" class="nav-btn">← Back to Home</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <div class="container">
+        <h1 class="page-title">Academic Portal</h1>
+
+        <!-- MESSAGES -->
+        <div id="successMessage" class="message success"></div>
+        <div id="errorMessage" class="message error"></div>
+
+        <!-- TABS -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab(0)">📊 Dashboard</button>
+            <button class="tab-btn" onclick="switchTab(1)">📝 Assignments</button>
+            <button class="tab-btn" onclick="switchTab(2)">📈 Grades</button>
+            <button class="tab-btn" onclick="switchTab(3)">📚 Course Materials</button>
+        </div>
+
+        <!-- TAB 1: DASHBOARD -->
+        <div id="tab0" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📚</div>
+                    <div class="stat-number" id="totalCourses">6</div>
+                    <div class="stat-label">Active Courses</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📝</div>
+                    <div class="stat-number" id="pendingAssignments">3</div>
+                    <div class="stat-label">Pending Submissions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-number" id="gpa">3.85</div>
+                    <div class="stat-label">Current GPA</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✓</div>
+                    <div class="stat-number" id="submittedAssignments">12</div>
+                    <div class="stat-label">Submitted</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: ASSIGNMENTS -->
+        <div id="tab1" class="tab-content">
+            <!-- SUBMIT ASSIGNMENT -->
+            <div class="assignment-section">
+                <h2>📤 Submit Assignment</h2>
+                <form class="form-grid" id="assignmentForm">
+                    <div class="form-group">
+                        <label for="subject">Subject/Course *</label>
+                        <select id="subject" name="subject" required>
+                            <option value="">-- Select Subject --</option>
+                            <option value="Web Development">Web Development</option>
+                            <option value="Data Structures">Data Structures</option>
+                            <option value="Database Systems">Database Systems</option>
+                            <option value="Operating Systems">Operating Systems</option>
+                            <option value="Algorithms">Algorithms</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="assignmentName">Assignment Title *</label>
+                        <input type="text" id="assignmentName" name="assignmentName" placeholder="e.g., Project 1 - Login Form" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dueDate">Due Date *</label>
+                        <input type="date" id="dueDate" name="dueDate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="submissionDate">Submission Date *</label>
+                        <input type="date" id="submissionDate" name="submissionDate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="comments">Comments (Optional)</label>
+                        <textarea id="comments" name="comments" placeholder="Add any comments or notes..."></textarea>
+                    </div>
+
+                    <div class="form-group file-upload-area" id="fileUploadArea" onclick="document.getElementById('fileInput').click()">
+                        <span>📎</span>
+                        <p><strong>Click to upload or drag & drop</strong></p>
+                        <p style="font-size: 0.9rem; color: #999;">PDF, ZIP, Images (Max 50MB)</p>
+                        <input type="file" id="fileInput" accept=".pdf,.zip,.doc,.docx,.jpg,.png,.gif">
+                        <div class="file-name" id="fileName"></div>
+                    </div>
+
+                    <div class="btn-container">
+                        <button type="reset" class="btn btn-secondary">Clear</button>
+                        <button type="submit" class="btn btn-primary">Submit Assignment</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- SUBMITTED ASSIGNMENTS -->
+            <div class="assignment-section">
+                <h2>📋 My Submissions</h2>
+                <div class="assignments-list" id="assignmentsList">
+                    <div class="empty-state">
+                        <span>📭</span>
+                        <p>No assignments submitted yet</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: GRADES -->
+        <div id="tab2" class="tab-content">
+            <div class="assignment-section">
+                <h2>📊 Grade Report</h2>
+                <table class="grades-table">
+                    <thead>
+                        <tr>
+                            <th>Subject</th>
+                            <th>Assignment</th>
+                            <th>Marks Obtained</th>
+                            <th>Total Marks</th>
+                            <th>Percentage</th>
+                            <th>Grade</th>
+                        </tr>
+                    </thead>
+                    <tbody id="gradesBody">
+                        <tr>
+                            <td>Web Development</td>
+                            <td>Project 1</td>
+                            <td>85</td>
+                            <td>100</td>
+                            <td>85%</td>
+                            <td><span class="grade-badge grade-a">A</span></td>
+                        </tr>
+                        <tr>
+                            <td>Data Structures</td>
+                            <td>Lab Assignment 2</td>
+                            <td>78</td>
+                            <td>100</td>
+                            <td>78%</td>
+                            <td><span class="grade-badge grade-b">B</span></td>
+                        </tr>
+                        <tr>
+                            <td>Database Systems</td>
+                            <td>Query Assignment</td>
+                            <td>92</td>
+                            <td>100</td>
+                            <td>92%</td>
+                            <td><span class="grade-badge grade-a">A</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB 4: COURSE MATERIALS -->
+        <div id="tab3" class="tab-content">
+            <div class="assignment-section">
+                <h2>📚 Course Materials</h2>
+                <div class="materials-grid" id="materialsGrid">
+                    <div class="material-card">
+                        <div class="material-icon">📄</div>
+                        <div class="material-name">Chapter 1 - Introduction</div>
+                        <div class="material-subject">Web Development</div>
+                        <button class="btn-download-material" onclick="downloadMaterial('Chapter1.pdf')">Download PDF</button>
+                    </div>
+                    <div class="material-card">
+                        <div class="material-icon">🎬</div>
+                        <div class="material-name">Lecture Slides Week 1</div>
+                        <div class="material-subject">Web Development</div>
+                        <button class="btn-download-material" onclick="downloadMaterial('Slides_Week1.pptx')">Download PPTX</button>
+                    </div>
+                    <div class="material-card">
+                        <div class="material-icon">📚</div>
+                        <div class="material-name">Data Structures Textbook</div>
+                        <div class="material-subject">Data Structures</div>
+                        <button class="btn-download-material" onclick="downloadMaterial('DataStructures_Book.pdf')">Download PDF</button>
+                    </div>
+                    <div class="material-card">
+                        <div class="material-icon">💻</div>
+                        <div class="material-name">Sample Code Files</div>
+                        <div class="material-subject">Web Development</div>
+                        <button class="btn-download-material" onclick="downloadMaterial('sample_code.zip')">Download ZIP</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== DATA MANAGEMENT =====
+        let allAssignments = [];
+        let selectedFile = null;
+
+        // Load assignments from localStorage
+        function loadAssignments() {
+            const stored = localStorage.getItem('campusconnect_assignments');
+            if (stored) {
+                allAssignments = JSON.parse(stored);
+                renderAssignments();
+            }
+        }
+
+        // Save assignments to localStorage
+        function saveAssignments() {
+            localStorage.setItem('campusconnect_assignments', JSON.stringify(allAssignments));
+        }
+
+        // ===== FILE HANDLING =====
+        const fileUploadArea = document.getElementById('fileUploadArea');
+        const fileInput = document.getElementById('fileInput');
+
+        fileUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileUploadArea.style.background = '#e8ecff';
+        });
+
+        fileUploadArea.addEventListener('dragleave', () => {
+            fileUploadArea.style.background = '#f8f9ff';
+        });
+
+        fileUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileUploadArea.style.background = '#f8f9ff';
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            const maxSize = 50 * 1024 * 1024; // 50MB
+            if (file.size > maxSize) {
+                showError('File size exceeds 50MB limit!');
+                return;
+            }
+
+            selectedFile = {
+                name: file.name,
+                size: (file.size / 1024 / 1024).toFixed(2),
+                type: file.type,
+                data: null
+            };
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                selectedFile.data = e.target.result;
+                document.getElementById('fileName').textContent = `✓ ${file.name}`;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // ===== FORM SUBMISSION =====
+        document.getElementById('assignmentForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const assignment = {
+                id: Date.now(),
+                subject: document.getElementById('subject').value,
+                title: document.getElementById('assignmentName').value,
+                dueDate: document.getElementById('dueDate').value,
+                submissionDate: document.getElementById('submissionDate').value,
+                comments: document.getElementById('comments').value,
+                file: selectedFile,
+                status: new Date(document.getElementById('submissionDate').value) <= new Date(document.getElementById('dueDate').value) ? 'On Time' : 'Late',
+                createdAt: new Date().toISOString()
+            };
+
+            allAssignments.unshift(assignment);
+            saveAssignments();
+            renderAssignments();
+            document.getElementById('assignmentForm').reset();
+            document.getElementById('fileName').textContent = '';
+            selectedFile = null;
+            showSuccess('✅ Assignment submitted successfully!');
+        });
+
+        // ===== RENDER ASSIGNMENTS =====
+        function renderAssignments() {
+            const list = document.getElementById('assignmentsList');
+
+            if (allAssignments.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <span>📭</span>
+                        <p>No assignments submitted yet</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = allAssignments.map(assign => `
+                <div class="assignment-card">
+                    <div class="assignment-header">
+                        <div class="assignment-title">${assign.title}</div>
+                        <span class="assignment-status ${assign.status === 'On Time' ? 'status-submitted' : 'status-pending'}">
+                            ${assign.status}
+                        </span>
+                    </div>
+                    <div class="assignment-info">📚 ${assign.subject}</div>
+                    <div class="assignment-info">📅 Submitted: ${new Date(assign.submissionDate).toLocaleDateString()}</div>
+                    <div class="assignment-info">Due: ${new Date(assign.dueDate).toLocaleDateString()}</div>
+                    ${assign.comments ? `<div class="assignment-info">💬 ${assign.comments}</div>` : ''}
+                    ${assign.file ? `<div class="assignment-info">📎 File: ${assign.file.name}</div>` : ''}
+                    <div class="assignment-actions">
+                        ${assign.file ? `<button class="btn-action btn-download" onclick="downloadAssignment('${assign.id}')">Download</button>` : ''}
+                        <button class="btn-action btn-delete" onclick="deleteAssignment('${assign.id}')">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ===== DELETE ASSIGNMENT =====
+        function deleteAssignment(id) {
+            if (confirm('Delete this submission?')) {
+                allAssignments = allAssignments.filter(a => a.id != id);
+                saveAssignments();
+                renderAssignments();
+                showSuccess('✅ Assignment deleted!');
+            }
+        }
+
+        // ===== DOWNLOAD ASSIGNMENT =====
+        function downloadAssignment(id) {
+            const assignment = allAssignments.find(a => a.id == id);
+            if (assignment && assignment.file) {
+                const link = document.createElement('a');
+                link.href = assignment.file.data;
+                link.download = assignment.file.name;
+                link.click();
+            }
+        }
+
+        // ===== DOWNLOAD COURSE MATERIAL =====
+        function downloadMaterial(filename) {
+            showSuccess(`📥 Starting download: ${filename}`);
+        }
+
+        // ===== SWITCH TABS =====
+        function switchTab(index) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(`tab${index}`).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // ===== MESSAGES =====
+        function showSuccess(message) {
+            const msg = document.getElementById('successMessage');
+            msg.textContent = message;
+            msg.classList.add('show');
+            setTimeout(() => msg.classList.remove('show'), 3000);
+        }
+
+        function showError(message) {
+            const msg = document.getElementById('errorMessage');
+            msg.textContent = message;
+            msg.classList.add('show');
+            setTimeout(() => msg.classList.remove('show'), 3000);
+        }
+
+        // ===== SET TODAY'S DATE =====
+        document.getElementById('submissionDate').valueAsDate = new Date();
+
+        // ===== INITIALIZATION =====
+        window.addEventListener('load', loadAssignments);
+    </script>
+</body>
+</html>

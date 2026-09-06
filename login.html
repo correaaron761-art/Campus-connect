@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusConnect - Login</title>
+    <style>
+        :root {
+            --color-primary: #208091;
+            --color-primary-hover: #1a6677;
+            --color-primary-active: #1a5460;
+            --color-background: #fcfcf9;
+            --color-surface: #ffffff;
+            --color-text: #134252;
+            --color-text-secondary: #628074;
+            --color-border: #d4b5a0;
+            --color-error: #c01530;
+            --color-success: #208091;
+            --space-16: 16px;
+            --space-20: 20px;
+            --space-24: 24px;
+            --space-32: 32px;
+            --radius-base: 8px;
+            --radius-lg: 12px;
+            --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            font-family: var(--font-family);
+            background: url('sjec.jpg');
+            background-position: center;
+            background-size: cover;
+            backdrop-filter: blur(3px);
+            color: var(--color-text);
+            line-height: 1.6;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-20);
+        }
+
+        /* ===== LOGIN/REGISTER/FORGOT PASSWORD SCREENS ===== */
+        .auth-container {
+            display: none;
+            width: 100%;
+            max-width: 420px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .auth-container.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .auth-card {
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            padding: var(--space-32);
+            width: 100%;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: var(--space-32);
+        }
+
+        .auth-header h1 {
+            font-size: 32px;
+            margin-bottom: var(--space-16);
+            color: var(--color-primary);
+            font-weight: 700;
+        }
+
+        .auth-header p {
+            color: var(--color-text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: var(--space-24);
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--color-text);
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 12px var(--space-16);
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-base);
+            font-size: 14px;
+            font-family: inherit;
+            background: var(--color-background);
+            color: var(--color-text);
+            transition: all 0.3s ease;
+        }
+
+        .form-input::placeholder {
+            color: var(--color-text-secondary);
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(32, 128, 145, 0.1);
+            background: white;
+        }
+
+        .btn-auth {
+            width: 100%;
+            padding: 12px var(--space-16);
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-base);
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: var(--space-16);
+        }
+
+        .btn-auth:hover {
+            background: var(--color-primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(32, 128, 145, 0.3);
+        }
+
+        .btn-auth:active {
+            background: var(--color-primary-active);
+            transform: translateY(0);
+        }
+
+        .error-message {
+            color: var(--color-error);
+            font-size: 13px;
+            margin-top: 12px;
+            padding: 10px 12px;
+            background: rgba(192, 21, 48, 0.1);
+            border-radius: var(--radius-base);
+            border-left: 3px solid var(--color-error);
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .success-message {
+            color: var(--color-success);
+            font-size: 13px;
+            margin-top: 12px;
+            padding: 10px 12px;
+            background: rgba(32, 128, 145, 0.1);
+            border-radius: var(--radius-base);
+            border-left: 3px solid var(--color-success);
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .auth-links {
+            margin-top: 24px;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .auth-links a {
+            color: var(--color-primary);
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .auth-links a:hover {
+            text-decoration: underline;
+        }
+
+        .auth-links span {
+            color: var(--color-text-secondary);
+            margin: 0 8px;
+        }
+
+        @media (max-width: 480px) {
+            .auth-card {
+                padding: var(--space-20);
+            }
+
+            .auth-header h1 {
+                font-size: 26px;
+            }
+
+            .auth-header p {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="auth-container active">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>🎓 CampusConnect</h1>
+                <p>Secure Access Portal</p>
+            </div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label class="form-label" for="userType">Login As *</label>
+                    <select id="userType" class="form-select" required>
+                        <option value="">-- Select User Type --</option>
+                        <option value="student">Student</option>
+                        <option value="teacher">Teacher</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="username">ID / Email *</label>
+                    <input type="text" id="username" class="form-input" placeholder="Example: 1001 or student@sjec.edu.in" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="password">Password *</label>
+                    <input type="password" id="password" class="form-input" placeholder="Enter your password" required>
+                </div>
+
+                <button type="submit" class="btn-auth">Login</button>
+
+                <div id="loginErrorMsg" class="error-message"></div>
+            </form>
+
+            <div class="auth-links">
+                <a onclick="switchScreen('forgotPassword')">Forgot Password?</a>
+                <span>•</span>
+                <a onclick="switchScreen('register')">Register Here</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Forgot Password Screen -->
+    <div id="forgotPasswordScreen" class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>🔐 Reset Password</h1>
+                <p>Recover your account access</p>
+            </div>
+
+            <form id="forgotPasswordForm" onsubmit="handleForgotPassword(event)">
+                <div class="form-group">
+                    <label class="form-label" for="resetEmail">Email Address *</label>
+                    <input type="email" id="resetEmail" class="form-input" placeholder="Enter registered email" required>
+                </div>
+
+                <button type="submit" class="btn-auth">Send Reset Link</button>
+
+                <div id="forgotErrorMsg" class="error-message"></div>
+                <div id="forgotSuccessMsg" class="success-message"></div>
+            </form>
+
+            <div class="auth-links">
+                <a onclick="switchScreen('login')">← Back to Login</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Screen -->
+    <div id="registerScreen" class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>📝 Register</h1>
+                <p>Create your account</p>
+            </div>
+
+            <form id="registerForm" onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label class="form-label" for="regUserType">Register As *</label>
+                    <select id="regUserType" class="form-select" required>
+                        <option value="">-- Select User Type --</option>
+                        <option value="student">Student</option>
+                        <option value="teacher">Teacher</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="regName">Full Name *</label>
+                    <input type="text" id="regName" class="form-input" placeholder="Your full name" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="regEmail">Email Address *</label>
+                    <input type="email" id="regEmail" class="form-input" placeholder="Your email" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="regPassword">Password *</label>
+                    <input type="password" id="regPassword" class="form-input" placeholder="Minimum 6 characters" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="regConfirmPassword">Confirm Password *</label>
+                    <input type="password" id="regConfirmPassword" class="form-input" placeholder="Re-enter password" required>
+                </div>
+
+                <button type="submit" class="btn-auth">Create Account</button>
+
+                <div id="regErrorMsg" class="error-message"></div>
+                <div id="regSuccessMsg" class="success-message"></div>
+            </form>
+
+            <div class="auth-links">
+                <a onclick="switchScreen('login')">Already registered? Login</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Users Database
+        function initializeUsers() {
+            const stored = localStorage.getItem('campusconnect_users');
+            if (stored) {
+                return JSON.parse(stored);
+            }
+            
+            const defaultUsers = {
+                student: {
+                    "1001": { password: "student123", name: "Arjun Kumar", role: "Student", email: "arjun@sjec.edu.in" },
+                    "1002": { password: "pass456", name: "Priya Singh", role: "Student", email: "priya@sjec.edu.in" }
+                },
+                teacher: {
+                    "T001": { password: "teacher123", name: "Dr. Ramesh Kumar", role: "Teacher", email: "ramesh@sjec.edu.in" },
+                    "T002": { password: "pass789", name: "Prof. Anjali Singh", role: "Teacher", email: "anjali@sjec.edu.in" }
+                }
+            };
+            
+            localStorage.setItem('campusconnect_users', JSON.stringify(defaultUsers));
+            return defaultUsers;
+        }
+
+        let users = initializeUsers();
+
+        // Check if already logged in
+        window.addEventListener('load', () => {
+            const storedUser = localStorage.getItem('campusconnect_user');
+            if (storedUser) {
+                const user = JSON.parse(storedUser);
+                if (user.isLoggedIn) {
+                    window.location.href = 'home.html';
+                }
+            }
+        });
+
+        // LOGIN HANDLER
+        function handleLogin(event) {
+            event.preventDefault();
+
+            const userType = document.getElementById('userType').value;
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('loginErrorMsg');
+
+            // Clear previous error
+            errorMsg.classList.remove('show');
+            errorMsg.textContent = '';
+
+            // Validation
+            if (!userType) {
+                showError(errorMsg, '⚠️ Please select user type');
+                return;
+            }
+
+            if (!username) {
+                showError(errorMsg, '⚠️ Please enter ID or email');
+                return;
+            }
+
+            if (!password) {
+                showError(errorMsg, '⚠️ Please enter password');
+                return;
+            }
+
+            // Check credentials
+            if (users[userType] && users[userType][username]) {
+                const userData = users[userType][username];
+                
+                if (userData.password === password) {
+                    // Login successful
+                    const currentUser = {
+                        id: username,
+                        role: userData.role,
+                        name: userData.name,
+                        isLoggedIn: true
+                    };
+
+                    localStorage.setItem('campusconnect_user', JSON.stringify(currentUser));
+                    
+                    // Redirect to home
+                    setTimeout(() => {
+                        window.location.href = 'home.html';
+                    }, 500);
+                } else {
+                    showError(errorMsg, '❌ Password is incorrect');
+                }
+            } else {
+                showError(errorMsg, '❌ User ID not found');
+            }
+        }
+
+        // REGISTER HANDLER
+        function handleRegister(event) {
+            event.preventDefault();
+
+            const userType = document.getElementById('regUserType').value;
+            const name = document.getElementById('regName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('regConfirmPassword').value;
+            const errorMsg = document.getElementById('regErrorMsg');
+            const successMsg = document.getElementById('regSuccessMsg');
+
+            // Clear previous messages
+            errorMsg.classList.remove('show');
+            successMsg.classList.remove('show');
+
+            // Validation
+            if (!userType) {
+                showError(errorMsg, '⚠️ Please select user type');
+                return;
+            }
+
+            if (!name) {
+                showError(errorMsg, '⚠️ Please enter your name');
+                return;
+            }
+
+            if (!email) {
+                showError(errorMsg, '⚠️ Please enter your email');
+                return;
+            }
+
+            if (!password) {
+                showError(errorMsg, '⚠️ Please enter password');
+                return;
+            }
+
+            if (password.length < 6) {
+                showError(errorMsg, '⚠️ Password must be at least 6 characters');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showError(errorMsg, '⚠️ Passwords do not match');
+                return;
+            }
+
+            // Check email already exists
+            for (const role in users) {
+                for (const id in users[role]) {
+                    if (users[role][id].email === email) {
+                        showError(errorMsg, '❌ Email already registered');
+                        return;
+                    }
+                }
+            }
+
+            // Generate new ID
+            let newId;
+            if (userType === 'student') {
+                const studentIds = Object.keys(users.student || {});
+                const numIds = studentIds.filter(id => !isNaN(id));
+                const maxNum = numIds.length > 0 ? Math.max(...numIds.map(Number)) : 1000;
+                newId = String(maxNum + 1);
+            } else {
+                const teacherIds = Object.keys(users.teacher || {}).filter(id => id.startsWith('T'));
+                const maxNum = teacherIds.length > 0 ? Math.max(...teacherIds.map(id => parseInt(id.substring(1)))) : 0;
+                newId = 'T' + (maxNum + 1).toString().padStart(3, '0');
+            }
+
+            // Add new user
+            if (!users[userType]) users[userType] = {};
+            users[userType][newId] = {
+                password: password,
+                name: name,
+                email: email,
+                role: userType === 'student' ? 'Student' : 'Teacher'
+            };
+
+            // Save to localStorage
+            localStorage.setItem('campusconnect_users', JSON.stringify(users));
+
+            // Show success message
+            showSuccess(successMsg, `✓ Registration successful! Your ID: ${newId} (Redirecting...)`);
+
+            // Auto-login
+            setTimeout(() => {
+                const currentUser = {
+                    id: newId,
+                    role: userType === 'student' ? 'Student' : 'Teacher',
+                    name: name,
+                    isLoggedIn: true
+                };
+                localStorage.setItem('campusconnect_user', JSON.stringify(currentUser));
+                window.location.href = 'home.html';
+            }, 2000);
+        }
+
+        // FORGOT PASSWORD HANDLER
+        function handleForgotPassword(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('resetEmail').value.trim();
+            const errorMsg = document.getElementById('forgotErrorMsg');
+            const successMsg = document.getElementById('forgotSuccessMsg');
+
+            // Clear previous messages
+            errorMsg.classList.remove('show');
+            successMsg.classList.remove('show');
+
+            if (!email) {
+                showError(errorMsg, '⚠️ Please enter your email');
+                return;
+            }
+
+            // Find user by email
+            let found = false;
+            for (const role in users) {
+                for (const id in users[role]) {
+                    if (users[role][id].email === email) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) break;
+            }
+
+            if (found) {
+                showSuccess(successMsg, `✓ Reset link sent to ${email} (Redirecting to login...)`);
+                setTimeout(() => {
+                    switchScreen('login');
+                }, 3000);
+            } else {
+                showError(errorMsg, '❌ Email not found in our database');
+            }
+        }
+
+        // UI HELPERS
+        function showError(element, message) {
+            element.textContent = message;
+            element.classList.add('show');
+        }
+
+        function showSuccess(element, message) {
+            element.textContent = message;
+            element.classList.add('show');
+        }
+
+        function switchScreen(screen) {
+            document.getElementById('loginScreen').classList.remove('active');
+            document.getElementById('forgotPasswordScreen').classList.remove('active');
+            document.getElementById('registerScreen').classList.remove('active');
+
+            if (screen === 'login') {
+                document.getElementById('loginScreen').classList.add('active');
+                document.getElementById('loginForm').reset();
+            } else if (screen === 'forgotPassword') {
+                document.getElementById('forgotPasswordScreen').classList.add('active');
+                document.getElementById('forgotPasswordForm').reset();
+            } else if (screen === 'register') {
+                document.getElementById('registerScreen').classList.add('active');
+                document.getElementById('registerForm').reset();
+            }
+        }
+    </script>
+</body>
+</html>

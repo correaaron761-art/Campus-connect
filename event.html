@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Event - CampusConnect</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #f4f4f4; }
+        .form-container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        label { display: block; margin: 10px 0 5px; font-weight: bold; }
+        input, textarea, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        button { background: #007bff; color: white; padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer; width: 100%; font-size: 16px; }
+        button:hover { background: #0056b3; }
+        #imagePreview { max-width: 200px; max-height: 200px; margin-top: 10px; border-radius: 5px; }
+        #selectedClubs { margin-top: 10px; padding: 10px; background: #e9ecef; border-radius: 5px; min-height: 40px; }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Upload New Event</h2>
+        <form id="eventForm" enctype="multipart/form-data" method="POST" action="/upload-event">
+            <label for="eventName">Event Name:</label>
+            <input type="text" id="eventName" name="eventName" required>
+
+            <label for="eventDate">Date & Time:</label>
+            <input type="datetime-local" id="eventDate" name="eventDate" required>
+
+            <label for="eventDesc">Description:</label>
+            <textarea id="eventDesc" name="eventDesc" rows="4" required></textarea>
+
+            <label for="eventPoster">Event Poster (Optional):</label>
+            <input type="file" id="eventPoster" name="eventPoster" accept="image/*">
+            <img id="imagePreview" style="display:none;">
+
+            <label for="clubs">Select Clubs:</label>
+            <select id="clubs" name="clubs[]" multiple size="5">
+                <option value="dance">Dance Club</option>
+                <option value="gaming">Gaming Club</option>
+                <option value="robotics">Robotics Club</option>
+                <option value="music">Music Club</option>
+                <option value="sports">Sports Club</option>
+                <option value="treasure-hunt">Treasure Hunt Club</option>
+            </select>
+            <div id="selectedClubs">No clubs selected yet.</div>
+
+            <button type="submit">Upload Event</button>
+        </form>
+    </div>
+
+    <script>
+        // Preview uploaded image
+        document.getElementById('eventPoster').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('imagePreview');
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Show selected clubs
+        document.getElementById('clubs').addEventListener('change', function() {
+            const selected = Array.from(this.selectedOptions).map(opt => opt.value);
+            document.getElementById('selectedClubs').textContent = selected.length ? 
+                'Selected: ' + selected.join(', ') : 'No clubs selected yet.';
+        });
+
+        // Form submission preview (optional)
+        document.getElementById('eventForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent actual submit for demo
+            const formData = new FormData(this);
+            console.log('Event Data:', Object.fromEntries(formData)); // Log to console
+            alert('Event ready to upload! Check console for data.');
+        });
+    </script>
+</body>
+</html>
